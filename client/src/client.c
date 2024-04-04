@@ -43,7 +43,7 @@ int main(void)
 
 	/* ---------------- LEER DE CONSOLA ---------------- */
 
-	leer_consola(logger);
+	//leer_consola(logger);
 
 	/*---------------------------------------------------PARTE 3-------------------------------------------------------------*/
 
@@ -105,14 +105,16 @@ void paquete(int conexion)
 	// Ahora toca lo divertido!
 	char* leido;
 	t_paquete* paquete;
-	
+	t_log* logger;
+	logger = iniciar_logger();
+	logger = log_create("./tp0.log","Log",true,LOG_LEVEL_INFO);
+	paquete = crear_paquete();
 	// Leemos y esta vez agregamos las lineas al paquete
 
 	leido = readline(">");
-	printf(leido);
 	while(0 != strcmp(leido,"")){
-		//log_info(logger,leido);
-		agregar_a_paquete(paquete,leido,sizeof(leido)+1);
+		log_info(logger,leido);
+		agregar_a_paquete(paquete,leido,strlen(leido)+1);
 		free(leido);
 		leido = readline(">");
 	};

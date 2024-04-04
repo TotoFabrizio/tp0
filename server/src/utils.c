@@ -16,15 +16,29 @@ int iniciar_servidor(void)
 	hints.ai_socktype = SOCK_STREAM;
 	hints.ai_flags = AI_PASSIVE;
 
-	getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+	int result = getaddrinfo(NULL, PUERTO, &hints, &servinfo);
+
+	if(result != 0){
+		log_error(logger, "Error en getaddrinfo_: %s", gai_strerror(result));
+		exit(-1);
+	}
 
 	// Creamos el socket de escucha del servidor
 
-	socket_servidor = socket(servinfo->ai_addr,servinfo->ai_socktype,servinfo->ai_protocol);
+	socket_servidor = socket(servinfo->ai_family,servinfo->ai_socktype,servinfo->ai_protocol);
+
+	if(socket_servidor == -1){
+		log_error(logger,"Error en socket: %s", strerror(socket_servidor));
+		exit(-2);
+	}
 
 	// Asociamos el socket a un puerto
 
-	bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+	int bindRes = bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen);
+	if(bindRes != 0 ){
+		error("fallo en bind");
+		exit(-3);
+	}
 
 	// Escuchamos las conexiones entrantes
 
@@ -40,7 +54,7 @@ int esperar_cliente(int socket_servidor)
 {
 	// Quitar esta línea cuando hayamos terminado de implementar la funcion
 	//assert(!"no implementado!");
-
+	log_info(logger,"Esperando cliente...");
 	// Aceptamos un nuevo cliente
 	int socket_cliente;
 
